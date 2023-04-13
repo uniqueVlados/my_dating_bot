@@ -1,6 +1,6 @@
 from cities import Cities
 from database import Database
-from read_tags import Read_tags
+# from read_tags import Read_tags
 
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
@@ -83,16 +83,16 @@ PROFILE_BTN = KeyboardButton("Профиль📝")
 MATCH_BTN = KeyboardButton("Match👥")
 HELP_BNT = KeyboardButton("Помощь💬")
 # ----
-INTERESTS_BTN = KeyboardButton("Интересы")
-LIFESTYLE_BTN = KeyboardButton("Образ жизни")
-LIFEPOS_BTN = KeyboardButton("Жизненная позиция")
-NEEDS_BTN = KeyboardButton("Потребности")
-MUSIC_BTN = KeyboardButton("Музыка")
-FILMS_BTN = KeyboardButton("Фильмы")
-BOOKS_BTN = KeyboardButton("Книги")
-GAMES_BTN = KeyboardButton("Игры")
-FOOD_BTN = KeyboardButton("Еда")
-DEL_TAGS = KeyboardButton("Удалить тег")
+# INTERESTS_BTN = KeyboardButton("Интересы")
+# LIFESTYLE_BTN = KeyboardButton("Образ жизни")
+# LIFEPOS_BTN = KeyboardButton("Жизненная позиция")
+# NEEDS_BTN = KeyboardButton("Потребности")
+# MUSIC_BTN = KeyboardButton("Музыка")
+# FILMS_BTN = KeyboardButton("Фильмы")
+# BOOKS_BTN = KeyboardButton("Книги")
+# GAMES_BTN = KeyboardButton("Игры")
+# FOOD_BTN = KeyboardButton("Еда")
+# DEL_TAGS = KeyboardButton("Удалить тег")
 
 # ----
 BACK_BTN = KeyboardButton("Назад🔙")
@@ -119,9 +119,9 @@ PROFILE_KB.add(EDIT_NAME_BTN, EDIT_CITY_BTN, EDIT_AGE_BTN, EDIT_DESC_BTN, EDIT_M
 EDIT_MBTI_KB = ReplyKeyboardMarkup(resize_keyboard=True)
 EDIT_MBTI_KB.add(MBTI_AGAIN_BTN, BACK_BTN)
 # TAGS
-TAGS_KB = ReplyKeyboardMarkup(resize_keyboard=True)
-TAGS_KB.add(INTERESTS_BTN, LIFESTYLE_BTN, LIFEPOS_BTN, NEEDS_BTN, MUSIC_BTN, FILMS_BTN, BOOKS_BTN, GAMES_BTN, FOOD_BTN,
-            DEL_TAGS, BACK_BTN)
+# TAGS_KB = ReplyKeyboardMarkup(resize_keyboard=True)
+# TAGS_KB.add(INTERESTS_BTN, LIFESTYLE_BTN, LIFEPOS_BTN, NEEDS_BTN, MUSIC_BTN, FILMS_BTN, BOOKS_BTN, GAMES_BTN, FOOD_BTN,
+#             DEL_TAGS, BACK_BTN)
 
 RATE_PROFILE_KB = ReplyKeyboardMarkup(resize_keyboard=True)
 RATE_PROFILE_KB.add(LIKE_BTN, SKIP_BTN)
@@ -321,217 +321,217 @@ async def info(message: types.Message):
         await message.reply(f"Вернулись в главное меню", reply_markup=MENU_KB)
 
     # TAGS
-    elif db.get_state(user_id) == "edit" and message.text == "Теги":
-        db.replace_state(user_id, "tags")
-        await message.reply(f"Выберите раздел", reply_markup=TAGS_KB)
-    elif db.get_state(user_id) == "tags" and message.text == "Назад🔙":
-        db.replace_state(user_id, "wait")
-        await message.reply(f"Вернулись в главное меню", reply_markup=MENU_KB)
-    # del tag
-    elif db.get_state(user_id) == "tags" and message.text == "Удалить тег":
-        db.replace_state(user_id, "del_tag")
-        await message.reply(f"ТЕГИ:\n{db.get_my_profile(user_id)[7]}\n-----------------\n"
-                            f"Введите тег, которые хотите удалить", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "del_tag":
-        ans = message.text
-        if ans in db.get_tags(user_id).split(", "):
-            db.replace_state(user_id, "tags")
-            tags_list = db.get_tags(user_id).split(", ")
-            tags_list.remove(ans)
-            db.add_tags(user_id, ", ".join(tags_list))
-            await message.reply(f"Тег удалён\n---------------\n{get_profile(user_id)}", reply_markup=TAGS_KB)
-        else:
-            db.replace_state(user_id, "tags")
-            await message.reply(f"Данного тега нет", reply_markup=TAGS_KB)
-    # -----
-    elif db.get_state(user_id) == "tags" and message.text == "Интересы":
-        db.replace_state(user_id, "edit_interests")
-        tags = Read_tags("other/interests.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_interests":
-        ans = message.text
-        tags = Read_tags("other/interests.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-
-    elif db.get_state(user_id) == "tags" and message.text == "Музыка":
-        db.replace_state(user_id, "edit_music")
-        tags = Read_tags("other/music.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_music":
-        ans = message.text
-        tags = Read_tags("other/music.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-
-    elif db.get_state(user_id) == "tags" and message.text == "Фильмы":
-        db.replace_state(user_id, "edit_films")
-        tags = Read_tags("other/films.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_films":
-        ans = message.text
-        tags = Read_tags("other/films.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-
-    elif db.get_state(user_id) == "tags" and message.text == "Сериалы":
-        db.replace_state(user_id, "edit_series")
-        tags = Read_tags("other/series.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_films":
-        ans = message.text
-        tags = Read_tags("other/series.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-
-    elif db.get_state(user_id) == "tags" and message.text == "Книги":
-        db.replace_state(user_id, "edit_books")
-        tags = Read_tags("other/books.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_books":
-        ans = message.text
-        tags = Read_tags("other/books.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-
-    elif db.get_state(user_id) == "tags" and message.text == "Игры":
-        db.replace_state(user_id, "edit_games")
-        tags = Read_tags("other/games.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_games":
-        ans = message.text
-        tags = Read_tags("other/games.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-
-    elif db.get_state(user_id) == "tags" and message.text == "Еда":
-        db.replace_state(user_id, "edit_food")
-        tags = Read_tags("other/food.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_food":
-        ans = message.text
-        tags = Read_tags("other/food.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-    elif db.get_state(user_id) == "tags" and message.text == "Жизненная позиция":
-        db.replace_state(user_id, "edit_lifepos")
-        tags = Read_tags("other/lifepos.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_lifepos":
-        ans = message.text
-        tags = Read_tags("other/lifepos.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-
-    elif db.get_state(user_id) == "tags" and message.text == "Потребности":
-        db.replace_state(user_id, "edit_needs")
-        tags = Read_tags("other/needs.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_needs":
-        ans = message.text
-        tags = Read_tags("other/needs.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
-
-    elif db.get_state(user_id) == "tags" and message.text == "Образ жизни":
-        db.replace_state(user_id, "edit_lifestyle")
-        tags = Read_tags("other/lifestyle.txt")
-        await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
-                            f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
-    elif db.get_state(user_id) == "edit_lifestyle":
-        ans = message.text
-        tags = Read_tags("other/lifestyle.txt")
-        if correct_input_tags(ans, tags, user_id):
-            db.replace_state(user_id, "wait")
-            if db.get_tags(user_id) is not None:
-                db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
-            else:
-                db.add_tags(user_id, ans)
-            await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
-        else:
-            await message.reply(
-                f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    # elif db.get_state(user_id) == "edit" and message.text == "Теги":
+    #     db.replace_state(user_id, "tags")
+    #     await message.reply(f"Выберите раздел", reply_markup=TAGS_KB)
+    # elif db.get_state(user_id) == "tags" and message.text == "Назад🔙":
+    #     db.replace_state(user_id, "wait")
+    #     await message.reply(f"Вернулись в главное меню", reply_markup=MENU_KB)
+    # # del tag
+    # elif db.get_state(user_id) == "tags" and message.text == "Удалить тег":
+    #     db.replace_state(user_id, "del_tag")
+    #     await message.reply(f"ТЕГИ:\n{db.get_my_profile(user_id)[7]}\n-----------------\n"
+    #                         f"Введите тег, которые хотите удалить", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "del_tag":
+    #     ans = message.text
+    #     if ans in db.get_tags(user_id).split(", "):
+    #         db.replace_state(user_id, "tags")
+    #         tags_list = db.get_tags(user_id).split(", ")
+    #         tags_list.remove(ans)
+    #         db.add_tags(user_id, ", ".join(tags_list))
+    #         await message.reply(f"Тег удалён\n---------------\n{get_profile(user_id)}", reply_markup=TAGS_KB)
+    #     else:
+    #         db.replace_state(user_id, "tags")
+    #         await message.reply(f"Данного тега нет", reply_markup=TAGS_KB)
+    # # -----
+    # elif db.get_state(user_id) == "tags" and message.text == "Интересы":
+    #     db.replace_state(user_id, "edit_interests")
+    #     tags = Read_tags("other/interests.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_interests":
+    #     ans = message.text
+    #     tags = Read_tags("other/interests.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    #
+    # elif db.get_state(user_id) == "tags" and message.text == "Музыка":
+    #     db.replace_state(user_id, "edit_music")
+    #     tags = Read_tags("other/music.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_music":
+    #     ans = message.text
+    #     tags = Read_tags("other/music.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    #
+    # elif db.get_state(user_id) == "tags" and message.text == "Фильмы":
+    #     db.replace_state(user_id, "edit_films")
+    #     tags = Read_tags("other/films.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_films":
+    #     ans = message.text
+    #     tags = Read_tags("other/films.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    #
+    # elif db.get_state(user_id) == "tags" and message.text == "Сериалы":
+    #     db.replace_state(user_id, "edit_series")
+    #     tags = Read_tags("other/series.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_films":
+    #     ans = message.text
+    #     tags = Read_tags("other/series.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    #
+    # elif db.get_state(user_id) == "tags" and message.text == "Книги":
+    #     db.replace_state(user_id, "edit_books")
+    #     tags = Read_tags("other/books.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_books":
+    #     ans = message.text
+    #     tags = Read_tags("other/books.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    #
+    # elif db.get_state(user_id) == "tags" and message.text == "Игры":
+    #     db.replace_state(user_id, "edit_games")
+    #     tags = Read_tags("other/games.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_games":
+    #     ans = message.text
+    #     tags = Read_tags("other/games.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    #
+    # elif db.get_state(user_id) == "tags" and message.text == "Еда":
+    #     db.replace_state(user_id, "edit_food")
+    #     tags = Read_tags("other/food.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_food":
+    #     ans = message.text
+    #     tags = Read_tags("other/food.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    # elif db.get_state(user_id) == "tags" and message.text == "Жизненная позиция":
+    #     db.replace_state(user_id, "edit_lifepos")
+    #     tags = Read_tags("other/lifepos.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_lifepos":
+    #     ans = message.text
+    #     tags = Read_tags("other/lifepos.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    #
+    # elif db.get_state(user_id) == "tags" and message.text == "Потребности":
+    #     db.replace_state(user_id, "edit_needs")
+    #     tags = Read_tags("other/needs.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_needs":
+    #     ans = message.text
+    #     tags = Read_tags("other/needs.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
+    #
+    # elif db.get_state(user_id) == "tags" and message.text == "Образ жизни":
+    #     db.replace_state(user_id, "edit_lifestyle")
+    #     tags = Read_tags("other/lifestyle.txt")
+    #     await message.reply(f"Выберите любое количество из представленных тегов. Теги вводить через запятую.\n\n"
+    #                         f"{''.join(tags.get_tags_list())}", reply_markup=types.ReplyKeyboardRemove())
+    # elif db.get_state(user_id) == "edit_lifestyle":
+    #     ans = message.text
+    #     tags = Read_tags("other/lifestyle.txt")
+    #     if correct_input_tags(ans, tags, user_id):
+    #         db.replace_state(user_id, "wait")
+    #         if db.get_tags(user_id) is not None:
+    #             db.add_tags(user_id, db.get_tags(user_id) + ", " + ans)
+    #         else:
+    #             db.add_tags(user_id, ans)
+    #         await message.reply(f"Теги добавлены", reply_markup=MENU_KB)
+    #     else:
+    #         await message.reply(
+    #             f"Теги введены в неверном формате/введён несуществующий тэг/тэг уже есть\nПовторите попытку!")
 
     # CHECK PROFILES
 
