@@ -25,6 +25,12 @@ class Database:
                    active TEXT);
                 """)
 
+        self.cur.execute("""CREATE TABLE IF NOT EXISTS mbti_pr(
+                           mbti1 TEXT,
+                           mbti2 TEXT,
+                           pr INT);
+                        """)
+
         self.conn.commit()
 
     def add_user(self, id_user, username):
