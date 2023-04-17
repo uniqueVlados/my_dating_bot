@@ -123,10 +123,9 @@ class Database:
         info = self.cur.fetchone()
         return info
 
-    def add_tags(self, id_user, tags_list):
+    def add_tags_str(self, id_user, tags):
         sql = """UPDATE users SET tags = ? WHERE user_id = ?"""
-        tags_set = set(tags_list.split(", "))
-        self.cur.execute(sql, (', '.join(tags_set), id_user))
+        self.cur.execute(sql, (tags, id_user))
         self.conn.commit()
 
     def get_tags(self, id_user):
