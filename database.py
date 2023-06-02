@@ -12,11 +12,19 @@ class Database:
            user_id INT PRIMARY KEY,
            username TEXT NULL,
            name_ TEXT NULL,
+           sex TEXT NULL,
            city TEXT NULL,
-           age TEXT NULL,
+           age INT NULL,
            description TEXT NULL,
            mbti TEXT NULL,
-           tags TEXT NULL);
+           tags TEXT NULL,
+           last_msg_id INT NULL,
+           last_id_profile INT NULL,
+           photo BLOB NULL,
+           start_age INT NULL,
+           end_age INT NULL,
+           sort_city TEXT NULL,
+           time_end_get INT NULL);
         """)
 
         self.cur.execute("""CREATE TABLE IF NOT EXISTS users_state(
@@ -30,6 +38,11 @@ class Database:
                            mbti2 TEXT,
                            pr INT);
                         """)
+
+        self.cur.execute("""CREATE TABLE IF NOT EXISTS likes(
+                                   id1 INT,
+                                   id2 INT);
+                                """)
 
         self.conn.commit()
 
@@ -57,6 +70,17 @@ class Database:
         self.cur.execute(sql, (s, id_user))
         self.conn.commit()
 
+    def replace_time_end_get(self, id_user, time_end_get_):
+        sql = """UPDATE users SET time_end_get = ? WHERE user_id = ?"""
+
+        self.cur.execute(sql, (time_end_get_, id_user))
+        self.conn.commit()
+
+    def get_time_end_get(self, id_user):
+        sql = """SELECT time_end_get from users where user_id = ?"""
+        self.cur.execute(sql, (id_user,))
+        return self.cur.fetchone()[0]
+
     def replace_active(self, id_user, active):
         sql = """UPDATE users_state SET active = ? WHERE user_id = ?"""
 
@@ -75,8 +99,32 @@ class Database:
         self.cur.execute(sql, (city, id_user))
         self.conn.commit()
 
+    def replace_sort_city(self, id_user, city):
+        sql = """UPDATE users SET sort_city = ? WHERE user_id = ?"""
+
+        self.cur.execute(sql, (city, id_user))
+        self.conn.commit()
+
+    def replace_sex(self, id_user, sex_):
+        sql = """UPDATE users SET sex = ? WHERE user_id = ?"""
+
+        self.cur.execute(sql, (sex_, id_user))
+        self.conn.commit()
+
     def replace_age(self, id_user, age):
         sql = """UPDATE users SET age = ? WHERE user_id = ?"""
+
+        self.cur.execute(sql, (age, id_user))
+        self.conn.commit()
+
+    def replace_start_age(self, id_user, age):
+        sql = """UPDATE users SET start_age = ? WHERE user_id = ?"""
+
+        self.cur.execute(sql, (age, id_user))
+        self.conn.commit()
+
+    def replace_end_age(self, id_user, age):
+        sql = """UPDATE users SET end_age = ? WHERE user_id = ?"""
 
         self.cur.execute(sql, (age, id_user))
         self.conn.commit()
@@ -103,6 +151,37 @@ class Database:
         self.cur.execute(sql, (id_user,))
         return self.cur.fetchone()[0]
 
+    def get_last_msg_id(self, id_user):
+        sql = """ SELECT last_msg_id from users where user_id = ?"""
+        self.cur.execute(sql, (id_user,))
+        return self.cur.fetchone()[0]
+
+    def get_sex(self, id_user):
+        sql = """ SELECT sex from users where user_id = ?"""
+        self.cur.execute(sql, (id_user,))
+        return self.cur.fetchone()[0]
+
+    def get_s_age(self, id_user):
+        sql = """ SELECT start_age from users where user_id = ?"""
+        self.cur.execute(sql, (id_user,))
+        return self.cur.fetchone()[0]
+
+    def get_end_age(self, id_user):
+        sql = """ SELECT end_age from users where user_id = ?"""
+        self.cur.execute(sql, (id_user,))
+        return self.cur.fetchone()[0]
+
+    def get_sort_city(self, id_user):
+        sql = """ SELECT sort_city from users where user_id = ?"""
+        self.cur.execute(sql, (id_user,))
+        return self.cur.fetchone()[0]
+
+    def replace_last_msg_id(self, id_user, id):
+        sql = """UPDATE users SET last_msg_id = ? WHERE user_id = ?"""
+
+        self.cur.execute(sql, (id, id_user))
+        self.conn.commit()
+
     def get_mbti(self, id_user):
         sql = """ SELECT mbti from users where user_id = ?"""
         self.cur.execute(sql, (id_user,))
@@ -113,8 +192,21 @@ class Database:
 
         self.cur.execute(sql, (id_user,))
         info = self.cur.fetchall()
-        print(info)
-        return info[randint(0, len(info)-1)]
+        return info[randint(0, len(info) - 1)]
+
+    def get_all_profiles(self, id_user):
+        sql = """ SELECT * from users where user_id != ?"""
+
+        self.cur.execute(sql, (id_user,))
+        info = self.cur.fetchall()
+        return info
+
+    def get_all_id(self, id_user):
+        sql = """ SELECT user_id from users where user_id != ?"""
+
+        self.cur.execute(sql, (id_user,))
+        info = self.cur.fetchall()
+        return info
 
     def get_my_profile(self, id_user):
         sql = """ SELECT * from users where user_id == ?"""
@@ -133,3 +225,53 @@ class Database:
         self.cur.execute(sql, (id_user,))
         return self.cur.fetchone()[0]
 
+    def get_match_pr(self, mbti1_, mbti2_):
+        sql = """ SELECT pr from mbti_pr where mbti1 = ? AND mbti2 = ?"""
+        self.cur.execute(sql, (mbti1_, mbti2_))
+        pr = self.cur.fetchone()
+        return pr
+
+    def add_like(self, id_user1, id_user2):
+        sql = """
+                INSERT INTO likes (id1, id2)
+                VALUES (?, ?)
+                """
+
+        self.cur.execute(sql, (id_user1, id_user2))
+        self.conn.commit()
+
+    def del_like(self, id_user1, id_user2):
+        sql = """DELETE from likes where id1 = ? AND id2 = ?"""
+        self.cur.execute(sql, (id_user1, id_user2))
+        self.conn.commit()
+
+    def replace_last_id_profile(self, id_user, id):
+        sql = """UPDATE users SET last_id_profile = ? WHERE user_id = ?"""
+
+        self.cur.execute(sql, (id, id_user))
+        self.conn.commit()
+
+    def get_last_id_profile(self, id_user):
+        sql = """SELECT last_id_profile from users where user_id = ?"""
+        self.cur.execute(sql, (id_user,))
+        return self.cur.fetchone()[0]
+
+    def get_liked_id_by_user(self, user_id):
+        sql = """ SELECT id1 from likes where id2 = ?"""
+        self.cur.execute(sql, (user_id,))
+        data = self.cur.fetchall()
+        ids = []
+        for p in data:
+            ids.append(p[0])
+        return ids
+
+    def replace_photo(self, blob_data, id_user):
+        sql = """UPDATE users SET photo = ? WHERE user_id = ?"""
+
+        self.cur.execute(sql, (blob_data, id_user))
+        self.conn.commit()
+
+    def get_photo(self, id_user):
+        sql = """SELECT photo from users where user_id = ?"""
+        self.cur.execute(sql, (id_user,))
+        return self.cur.fetchone()[0]
